@@ -1112,7 +1112,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[95vh] overflow-y-auto">
             <div class="bg-yellow-500 p-4 text-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
                 <h3 class="font-bold uppercase tracking-tight">Add Billing Item</h3>
-                <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">&times;</button>
+                <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">×</button>
             </div>
             <form id="itemForm" onsubmit="event.preventDefault(); addItemToInvoice();" class="p-5 md:p-6 item-modal-grid">
                 <div class="autocomplete-wrapper mb-4">
@@ -1153,7 +1153,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[95vh] overflow-y-auto">
             <div class="bg-indigo-500 p-4 text-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
                 <h3 class="font-bold uppercase tracking-tight">Add Quotation Item</h3>
-                <button onclick="toggleQuotItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">&times;</button>
+                <button onclick="toggleQuotItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">×</button>
             </div>
             <form id="quotItemForm" onsubmit="event.preventDefault(); addItemToQuotation();" class="p-5 md:p-6 item-modal-grid">
                 <div class="autocomplete-wrapper mb-4">
@@ -1194,7 +1194,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[95vh] overflow-y-auto">
             <div class="bg-teal-500 p-4 text-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
                 <h3 class="font-bold uppercase tracking-tight">Add Delivery Item</h3>
-                <button onclick="toggleDelItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">&times;</button>
+                <button onclick="toggleDelItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">×</button>
             </div>
             <form id="delItemForm" onsubmit="event.preventDefault(); addItemToDelivery();" class="p-5 md:p-6 item-modal-grid">
                 <div class="autocomplete-wrapper mb-4">
@@ -1223,7 +1223,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[95vh] overflow-y-auto">
             <div class="bg-amber-500 p-4 text-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
                 <h3 class="font-bold uppercase tracking-tight">Add Purchase Item</h3>
-                <button onclick="togglePurItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">&times;</button>
+                <button onclick="togglePurItemModal(false)" class="text-white hover:text-gray-200 text-3xl leading-none">×</button>
             </div>
             <form id="purItemForm" onsubmit="event.preventDefault(); addItemToPurchase();" class="p-5 md:p-6 item-modal-grid">
                 <div class="autocomplete-wrapper mb-4">
@@ -1264,7 +1264,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3>
-                <button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+                <button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">×</button>
             </div>
             <form id="clientForm" class="p-6 space-y-4">
                 <input type="hidden" id="editClientIndex" value="-1">
@@ -1284,7 +1284,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 id="productModalTitle" class="font-bold uppercase">Add Product</h3>
-                <button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+                <button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">×</button>
             </div>
             <form id="productForm" class="p-6 space-y-4">
                 <input type="hidden" id="editProductIndex" value="-1">
@@ -1303,7 +1303,7 @@
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-blue-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Supplier</h3>
-                <button onclick="toggleSupplierModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+                <button onclick="toggleSupplierModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">×</button>
             </div>
             <form id="supplierForm" class="p-6 space-y-4">
                 <input type="hidden" id="editSupplierIndex" value="-1">
@@ -1322,7 +1322,7 @@
 
     <div id="accModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
-            <div id="accModalHeader" class="p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
+            <div id="accModalHeader" class="p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">×</button></div>
             <form id="accForm" class="p-6 space-y-4">
                 <input type="hidden" id="accType" value="income">
                 <input type="hidden" id="editAccIndex" value="-1">
@@ -1336,7 +1336,7 @@
 
     <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
-            <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
+            <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">×</button></div>
             <form id="orderForm" class="p-6 space-y-4">
                 <input type="hidden" id="editOrderIndex" value="-1">
                 <div><label class="text-[10px] font-bold">Client</label><input type="text" id="orderClient" required class="w-full border py-2 px-3"></div>
@@ -2236,12 +2236,16 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const inv = invoices[index];
             const clientData = clients.find(c => c.name === inv.client) || { address: 'N/A', mobile: 'N/A' };
-            const footerMargin = 32; 
+            const footerMargin = 20; // reduced to allow content closer to footer
             const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
+            let isFirstPage = true;  // track first page
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) {
-                    doc.addPage(); addHeaderAndFooter(); return 46;
+                    doc.addPage(); 
+                    addHeaderAndFooter(); 
+                    isFirstPage = false; // after first page, title not repeated
+                    return 46;
                 }
                 return y;
             }
@@ -2254,7 +2258,8 @@
                 doc.text(settings.address, 105, 26, { align: "center" });
                 const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
                 doc.text(contactLine, 105, 30, { align: "center" });
-                if (doc.getNumberOfPages() === 1) {
+                // only show title on first page
+                if (isFirstPage) {
                     doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold");
                     doc.text("INVOICE", 105, 42, { align: "center" });
                 }
@@ -2286,7 +2291,7 @@
                     doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                     const cl = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(cl, 105, 30, { align: "center" });
-                    doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold"); doc.text("INVOICE", 105, 42, { align: "center" });
+                    // first page title already added, subsequent pages no title
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
@@ -2502,10 +2507,12 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const quot = quotations[index];
             const clientData = clients.find(c => c.name === quot.client) || { address: 'N/A', mobile: 'N/A' };
-            const footerMargin = 32; const pageHeight = doc.internal.pageSize.height;
+            const footerMargin = 20; // reduced margin
+            const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
+            let isFirstPage = true;
             function checkPageBreak(y, neededSpace = 10) {
-                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 46; } return y;
+                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
@@ -2516,7 +2523,7 @@
                 doc.text(settings.address, 105, 26, { align: "center" });
                 const cl = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
                 doc.text(cl, 105, 30, { align: "center" });
-                if (doc.getNumberOfPages() === 1) {
+                if (isFirstPage) {
                     doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold");
                     doc.text("QUOTATION", 105, 42, { align: "center" });
                 }
@@ -2547,7 +2554,7 @@
                     doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                     const clLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(clLine, 105, 30, { align: "center" });
-                    doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold"); doc.text("QUOTATION", 105, 42, { align: "center" });
+                    // title only on first page
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
@@ -2719,10 +2726,12 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const del = deliveries[index];
             const clientData = clients.find(c => c.name === del.client) || { address: 'N/A', mobile: 'N/A' };
-            const footerMargin = 32; const pageHeight = doc.internal.pageSize.height;
+            const footerMargin = 20;
+            const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
+            let isFirstPage = true;
             function checkPageBreak(y, neededSpace = 10) {
-                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 46; } return y;
+                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
@@ -2733,7 +2742,7 @@
                 doc.text(settings.address, 105, 26, { align: "center" });
                 const clLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
                 doc.text(clLine, 105, 30, { align: "center" });
-                if (doc.getNumberOfPages() === 1) {
+                if (isFirstPage) {
                     doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold");
                     doc.text("DELIVERY CHALLAN", 105, 42, { align: "center" });
                 }
@@ -2763,7 +2772,6 @@
                     doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                     const clLn = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(clLn, 105, 30, { align: "center" });
-                    doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold"); doc.text("DELIVERY CHALLAN", 105, 42, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
@@ -2932,10 +2940,12 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const pur = purchases[index];
             const supplierData = suppliers.find(s => s.name === pur.supplier) || { address: 'N/A', mobile: 'N/A' };
-            const footerMargin = 32; const pageHeight = doc.internal.pageSize.height;
+            const footerMargin = 20;
+            const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
+            let isFirstPage = true;
             function checkPageBreak(y, neededSpace = 10) {
-                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 46; } return y;
+                if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
@@ -2943,7 +2953,7 @@
                 doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                 const cl = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(cl, 105, 30, { align: "center" });
-                if (doc.getNumberOfPages() === 1) {
+                if (isFirstPage) {
                     doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold"); doc.text("PURCHASE ORDER", 105, 42, { align: "center" });
                 }
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -2972,7 +2982,6 @@
                     doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                     const clLn = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(clLn, 105, 30, { align: "center" });
-                    doc.setFontSize(12); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold"); doc.text("PURCHASE ORDER", 105, 42, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
@@ -3126,7 +3135,7 @@
             document.getElementById('pdf-currency').textContent = settings.currency || '৳';
             
             if (receipt.paymentMode === 'Cheque' && receipt.chequeNo) {
-                document.getElementById('pdf-cheque-details').innerHTML = `<span style="font-weight: bold; color: #000000;">Cheque No:</span> ${receipt.chequeNo} &nbsp;&nbsp; <span style="font-weight: bold; color: #000000;">Bank:</span> ${receipt.bankName || ''}`;
+                document.getElementById('pdf-cheque-details').innerHTML = `<span style="font-weight: bold; color: #000000;">Cheque No:</span> ${receipt.chequeNo}    <span style="font-weight: bold; color: #000000;">Bank:</span> ${receipt.bankName || ''}`;
             } else { document.getElementById('pdf-cheque-details').innerHTML = ''; }
             
             // Branding and Signature
@@ -3226,8 +3235,9 @@
 
         function downloadDocumentPDF(index) {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
-            const documentData = documents[index]; const footerMargin = 32; const pageHeight = doc.internal.pageSize.height;
+            const documentData = documents[index]; const footerMargin = 20; const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
+            let isFirstPage = true;
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 46; } return y;
             }
@@ -3237,6 +3247,7 @@
                 doc.setFontSize(16); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 22, { align: "center" });
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.address, 105, 26, { align: "center" });
                 const cl = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`; doc.text(cl, 105, 30, { align: "center" });
+                // title not added for generic documents? but keep same pattern.
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
