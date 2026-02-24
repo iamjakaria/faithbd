@@ -39,7 +39,7 @@
         .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab, .moneyreceipt-sub-tab, .documents-sub-tab { display: none; }
         .invoice-sub-tab.active, .accounts-sub-tab.active, .quotation-sub-tab.active, .delivery-sub-tab.active, .purchase-sub-tab.active, .moneyreceipt-sub-tab.active, .documents-sub-tab.active { display: block; }
         .btn-back:hover i { transform: translateX(-5px); transition: transform 0.3s ease; }
-        .table-container { overflow-x: auto; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #ef4444; }
         
         .autocomplete-wrapper { position: relative; }
@@ -294,6 +294,17 @@
         #purchaseItemsBody td:nth-child(6) { text-align: right; }
         #purchaseItemsBody td:nth-child(7) { text-align: right; font-weight: bold; }
         #purchaseItemsBody td:nth-child(8) { text-align: center; }
+
+        /* Invoice table styling with proper column widths for action visibility */
+        #invoiceItemsBody td:nth-child(1) { min-width: 40px; }  /* SL */
+        #invoiceItemsBody td:nth-child(2) { min-width: 150px; } /* Item */
+        #invoiceItemsBody td:nth-child(3) { min-width: 70px; }  /* Qty */
+        #invoiceItemsBody td:nth-child(4) { min-width: 80px; }  /* Price */
+        #invoiceItemsBody td:nth-child(5) { min-width: 100px; } /* Total */
+        #invoiceItemsBody td:nth-child(6) { min-width: 60px; text-align: center; } /* Action */
+        
+        #invoiceItemsBody td:last-child { position: sticky; right: 0; background: white; z-index: 5; }
+        #invoiceItemsBody td:last-child::before { content: ''; position: absolute; left: -5px; top: 0; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.1), transparent); pointer-events: none; }
 
         @media screen and (orientation: landscape) {
             html {
@@ -622,10 +633,10 @@
                             <i class="fas fa-plus mr-1"></i> ADD ITEM
                         </button>
                     </div>
-                    <div class="table-container bg-white border rounded-xl overflow-hidden">
-                        <table class="w-full text-left border-collapse">
+                    <div class="table-container bg-white border rounded-xl overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[650px]">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Qty</th><th class="p-3">Price</th><th class="p-3">Total</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Qty</th><th class="p-3">Price</th><th class="p-3">Total</th><th class="p-3 text-center">Action</th></tr>
                             </thead>
                             <tbody id="invoiceItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
@@ -2134,7 +2145,7 @@
 
         function renderInvoiceItems() {
             let g = 0;
-            document.getElementById('invoiceItemsBody').innerHTML = currentInvoiceItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.qty}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removeItemFromInv(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
+            document.getElementById('invoiceItemsBody').innerHTML = currentInvoiceItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.qty}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3 text-center"><button onclick="removeItemFromInv(${i})" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
             document.getElementById('invGrandTotal').innerText = g.toFixed(2);
             calculateBalance();
         }
