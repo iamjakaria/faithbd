@@ -3304,18 +3304,8 @@
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
 
-        // --- RIGHT SWIPE BACK ---
-        let touchStartX = 0; let touchEndX = 0;
-        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
-        function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (activeTab && activeTab.id !== 'dashboard') { showDashboard(); }
-            }
-        }
-        document.addEventListener('touchstart', handleTouchStart);
-        document.addEventListener('touchend', handleTouchEnd);
+        // --- RIGHT SWIPE BACK REMOVED --- (touch handlers deleted)
+
     </script>
 </body>
 </html>
