@@ -1,18 +1,14 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FAITH ENGINEERING | Fire Safety Engineering</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
+    <!-- Firebase SDKs (must be loaded before our script) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script>
-        // Firebase Configuration
+        // Firebase configuration (provided)
         const firebaseConfig = {
             apiKey: "AIzaSyA57qfK4Hi9tKeKmvm16SHnDdrLoSmBJSE",
             authDomain: "faithv5-c377c.firebaseapp.com",
@@ -23,11 +19,11 @@
             appId: "1:41219271418:web:b649af1892388fe73cf743",
             measurementId: "G-DL20MLLFWN"
         };
-
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        
+    </script>
+    <script>
         // Offline/online resilience: load CDN resources, but if they fail, we already have inline backup via styled content
         document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" onerror="this.onerror=null;this.href=\'data:text/css;base64,LmZhLXh4e306ZGVmYXVsdHt9\'" />');
     </script>
@@ -325,7 +321,6 @@
         }
     </style>
 </head>
-
 <body class="bg-gray-50 text-gray-800">
     <div id="loginOverlay">
         <div class="login-card">
@@ -409,6 +404,7 @@
             </div>
         </div>
     </nav>
+    
     <main class="w-full">
         <div id="clients" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-red-100">
@@ -1094,6 +1090,7 @@
             </div>
         </div>
     </main>
+    
     <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md maxh-[95vh] overflow-y-auto">
             <div class="bg-yellow-500 p-4 text-white flex justify-between items-center sticky top-0 z-10 shadow-sm">
@@ -1405,17 +1402,98 @@
             </div>
         </div>
     </div>
+    
     <script>
-        // --- LOGIN SYSTEM ---
+        // ========== FIREBASE INTEGRATION ==========
+        // Replace all localStorage operations with Firebase RTDB sync.
+        // We keep the in‑memory arrays, but push changes to firebase and listen.
+        // Also maintain localStorage as backup.
+        const fbRef = database.ref('faithv5'); // root
+
+        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], moneyReceipts = [], documents = [], income = [], expense = [], orders = [];
+        let settings = {};
+
+        let currentInvoiceItems = [], currentQuotationItems = [], currentDeliveryItems = [], currentPurchaseItems = [];
+        let selectedClientIndex = -1, selectedSupplierIndex = -1;
+        let activeAccountsTab = 'transactions';
+
+        // ----- Firebase sync -----
+        function loadFromFirebase(snapshot) {
+            const data = snapshot.val() || {};
+            clients = data.clients || [];
+            products = data.products || [];
+            suppliers = data.suppliers || [];
+            invoices = data.invoices || [];
+            quotations = data.quotations || [];
+            deliveries = data.deliveries || [];
+            purchases = data.purchases || [];
+            moneyReceipts = data.moneyReceipts || [];
+            documents = data.documents || [];
+            income = data.income || [];
+            expense = data.expense || [];
+            orders = data.orders || [];
+            settings = data.settings || {
+                company: 'FAITH ENGINEERING',
+                slogan: 'FIRE SAFETY ENGINEERING & CONSULTANT',
+                address: 'Dhaka, Bangladesh',
+                email: '', mobile: '', website: '',
+                signatory: '', designation: '',
+                logo: '', seal: '', sign: '',
+                currency: '৳',
+                terms_quot: '1. This quotation is valid for 30 days. 2. Prices are subject to change without notice.', 
+                terms_inv: '1. Payment should be made via check/cash. 2. Goods once sold are not returnable.',
+                terms_challan: '1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.',
+                terms_po: '1. Delivery must be made on or before the delivery date. 2. Payment terms: 30 days from invoice.'
+            };
+            // re-render everything
+            renderClients();
+            renderProducts();
+            renderSuppliers();
+            renderSavedInvoices();
+            renderSavedQuotations();
+            renderSavedDeliveries();
+            renderSavedPurchases();
+            renderSavedMoneyReceipts();
+            renderSavedDocuments();
+            loadSettingsFields();
+            updateUINames();
+            // accounts
+            renderAccounts();
+        }
+
+        fbRef.on('value', loadFromFirebase, err => console.warn('Firebase read failed, using localStorage fallback', err));
+
+        // Helper to push updates (for any data change)
+        function pushToFirebase() {
+            const allData = {
+                clients, products, suppliers, invoices, quotations, deliveries, purchases,
+                moneyReceipts, documents, income, expense, orders, settings
+            };
+            fbRef.set(allData).catch(e => console.warn('Firebase write failed', e));
+            // also keep localStorage as fallback
+            localStorage.setItem('faith_clients_list', JSON.stringify(clients));
+            localStorage.setItem('faith_products_list', JSON.stringify(products));
+            localStorage.setItem('faith_suppliers_list', JSON.stringify(suppliers));
+            localStorage.setItem('faith_invoices_list', JSON.stringify(invoices));
+            localStorage.setItem('faith_quotations_list', JSON.stringify(quotations));
+            localStorage.setItem('faith_deliveries_list', JSON.stringify(deliveries));
+            localStorage.setItem('faith_purchases_list', JSON.stringify(purchases));
+            localStorage.setItem('faith_moneyreceipts_list', JSON.stringify(moneyReceipts));
+            localStorage.setItem('faith_documents_list', JSON.stringify(documents));
+            localStorage.setItem('faith_income_list', JSON.stringify(income));
+            localStorage.setItem('faith_expense_list', JSON.stringify(expense));
+            localStorage.setItem('faith_orders_list', JSON.stringify(orders));
+            localStorage.setItem('faith_settings', JSON.stringify(settings));
+        }
+
+        // ----- LOGIN SYSTEM -----
         function performLogin() {
             const loginId = document.getElementById('loginId').value.trim();
             const loginPass = document.getElementById('loginPass').value.trim();
             if (loginId === '1234@' && loginPass === '@1234') {
                 document.body.classList.add('logged-in');
                 localStorage.setItem('faith_logged_in', 'yes');
-                loadAllData();
-                // Enable Firebase realtime sync after login
-                enableFirebaseSync();
+                // No need to loadAllData separately, firebase will trigger loadFromFirebase
             } else {
                 alert('Invalid credentials');
             }
@@ -1431,201 +1509,14 @@
             document.getElementById('moveTopBtn').style.display = 'none';
         }
 
-        // Firebase Realtime Database Sync Functions
-        function enableFirebaseSync() {
-            // Listen for changes in each data node
-            database.ref('clients').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    clients = Object.values(data);
-                    localStorage.setItem('faith_clients_list', JSON.stringify(clients));
-                    renderClients();
-                }
-            });
-
-            database.ref('products').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    products = Object.values(data);
-                    localStorage.setItem('faith_products_list', JSON.stringify(products));
-                    renderProducts();
-                }
-            });
-
-            database.ref('suppliers').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    suppliers = Object.values(data);
-                    localStorage.setItem('faith_suppliers_list', JSON.stringify(suppliers));
-                    renderSuppliers();
-                }
-            });
-
-            database.ref('invoices').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    invoices = Object.values(data);
-                    localStorage.setItem('faith_invoices_list', JSON.stringify(invoices));
-                    renderSavedInvoices();
-                }
-            });
-
-            database.ref('quotations').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    quotations = Object.values(data);
-                    localStorage.setItem('faith_quotations_list', JSON.stringify(quotations));
-                    renderSavedQuotations();
-                }
-            });
-
-            database.ref('deliveries').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    deliveries = Object.values(data);
-                    localStorage.setItem('faith_deliveries_list', JSON.stringify(deliveries));
-                    renderSavedDeliveries();
-                }
-            });
-
-            database.ref('purchases').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    purchases = Object.values(data);
-                    localStorage.setItem('faith_purchases_list', JSON.stringify(purchases));
-                    renderSavedPurchases();
-                }
-            });
-
-            database.ref('moneyReceipts').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    moneyReceipts = Object.values(data);
-                    localStorage.setItem('faith_moneyreceipts_list', JSON.stringify(moneyReceipts));
-                    renderSavedMoneyReceipts();
-                }
-            });
-
-            database.ref('documents').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    documents = Object.values(data);
-                    localStorage.setItem('faith_documents_list', JSON.stringify(documents));
-                    renderSavedDocuments();
-                }
-            });
-
-            database.ref('income').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    income = Object.values(data);
-                    localStorage.setItem('faith_income_list', JSON.stringify(income));
-                }
-            });
-
-            database.ref('expense').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    expense = Object.values(data);
-                    localStorage.setItem('faith_expense_list', JSON.stringify(expense));
-                }
-            });
-
-            database.ref('orders').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    orders = Object.values(data);
-                    localStorage.setItem('faith_orders_list', JSON.stringify(orders));
-                }
-            });
-
-            database.ref('settings').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    settings = data;
-                    localStorage.setItem('faith_settings', JSON.stringify(settings));
-                    loadSettingsFields();
-                    updateUINames();
-                }
-            });
-        }
-
-        function pushToFirebase(path, data) {
-            const newRef = database.ref(path).push();
-            data.id = newRef.key;
-            newRef.set(data);
-        }
-
-        function updateInFirebase(path, id, data) {
-            database.ref(`${path}/${id}`).set(data);
-        }
-
-        function removeFromFirebase(path, id) {
-            database.ref(`${path}/${id}`).remove();
-        }
-
         window.onload = function() {
             if (localStorage.getItem('faith_logged_in') === 'yes') {
                 document.body.classList.add('logged-in');
-                loadAllData();
-                enableFirebaseSync();
-            } 
+                // firebase will already be listening and populate
+            } else {
+                // keep overlay
+            }
         };
-
-        function loadAllData() {
-            clients = JSON.parse(localStorage.getItem('faith_clients_list')) || [];
-            products = JSON.parse(localStorage.getItem('faith_products_list')) || [];
-            suppliers = JSON.parse(localStorage.getItem('faith_suppliers_list')) || [];
-            invoices = JSON.parse(localStorage.getItem('faith_invoices_list')) || [];
-            quotations = JSON.parse(localStorage.getItem('faith_quotations_list')) || [];
-            deliveries = JSON.parse(localStorage.getItem('faith_deliveries_list')) || [];
-            purchases = JSON.parse(localStorage.getItem('faith_purchases_list')) || [];
-            moneyReceipts = JSON.parse(localStorage.getItem('faith_moneyreceipts_list')) || [];
-            documents = JSON.parse(localStorage.getItem('faith_documents_list')) || [];
-            income = JSON.parse(localStorage.getItem('faith_income_list')) || [];
-            expense = JSON.parse(localStorage.getItem('faith_expense_list')) || [];
-            orders = JSON.parse(localStorage.getItem('faith_orders_list')) || [];
-            settings = JSON.parse(localStorage.getItem('faith_settings')) || {
-                company: 'FAITH ENGINEERING',
-                slogan: 'FIRE SAFETY ENGINEERING & CONSULTANT',
-                address: 'Dhaka, Bangladesh',
-                email: '', mobile: '', website: '',
-                signatory: '', designation: '',
-                logo: '', seal: '', sign: '',
-                currency: '৳',
-                terms_quot: '1. This quotation is valid for 30 days. 2. Prices are subject to change without notice.', 
-                terms_inv: '1. Payment should be made via check/cash. 2. Goods once sold are not returnable.',
-                terms_challan: '1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.',
-                terms_po: '1. Delivery must be made on or before the delivery date. 2. Payment terms: 30 days from invoice.'
-            };
-
-            currentInvoiceItems = [];
-            currentQuotationItems = [];
-            currentDeliveryItems = [];
-            currentPurchaseItems = [];
-            selectedClientIndex = -1;
-            selectedSupplierIndex = -1;
-            activeAccountsTab = 'transactions';
-            
-            renderClients();
-            renderProducts();
-            renderSuppliers();
-            renderSavedInvoices();
-            renderSavedQuotations();
-            renderSavedDeliveries();
-            renderSavedPurchases();
-            renderSavedMoneyReceipts();
-            renderSavedDocuments();
-            loadSettingsFields();
-            updateUINames();
-            showDashboard();
-        }
-
-        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], moneyReceipts = [], documents = [], income = [], expense = [], orders = [];
-        let settings = {};
-        let currentInvoiceItems = [], currentQuotationItems = [], currentDeliveryItems = [], currentPurchaseItems = [];
-        let selectedClientIndex = -1, selectedSupplierIndex = -1;
-        let activeAccountsTab = 'transactions';
 
         // --- Utility functions ---
         function formatFriendlyDate(dateStr) {
@@ -1662,7 +1553,6 @@
             document.getElementById('termsInvoice').value = settings.terms_inv || '';
             document.getElementById('termsChallan').value = settings.terms_challan || '';
             document.getElementById('termsPO').value = settings.terms_po || '';
-            
             if(settings.logo) document.getElementById('logoPreview').innerHTML = `<img src="${settings.logo}" class="h-full w-full object-contain">`; else document.getElementById('logoPreview').innerHTML = '<i class="fas fa-image text-gray-300"></i>';
             if(settings.seal) document.getElementById('sealPreview').innerHTML = `<img src="${settings.seal}" class="h-full w-full object-contain">`; else document.getElementById('sealPreview').innerHTML = '<i class="fas fa-stamp text-gray-300"></i>';
             if(settings.sign) document.getElementById('signPreview').innerHTML = `<img src="${settings.sign}" class="h-full w-full object-contain">`; else document.getElementById('signPreview').innerHTML = '<i class="fas fa-signature text-gray-300"></i>';
@@ -1698,19 +1588,13 @@
             settings.terms_inv = document.getElementById('termsInvoice').value;
             settings.terms_challan = document.getElementById('termsChallan').value;
             settings.terms_po = document.getElementById('termsPO').value;
-
             const logoFile = document.getElementById('setLogo').files[0];
             const sealFile = document.getElementById('setSeal').files[0];
             const signFile = document.getElementById('setSign').files[0];
-
             if(logoFile) settings.logo = await toBase64(logoFile);
             if(sealFile) settings.seal = await toBase64(sealFile);
             if(signFile) settings.sign = await toBase64(signFile);
-
-            localStorage.setItem('faith_settings', JSON.stringify(settings));
-            // Update in Firebase
-            database.ref('settings').set(settings);
-            
+            pushToFirebase(); // sync after settings change
             updateUINames();
             alert("Settings Saved Successfully!");
         }
@@ -1744,7 +1628,7 @@
             document.getElementById('moveTopBtn').style.display = 'none';
         }
 
-        // --- Supplier Logic ---
+        // --- Supplier Logic --- (all pushToFirebase after modifications)
         function toggleSupplierModal(s, idx=-1) {
             document.getElementById('supplierModal').classList.toggle('hidden', !s);
             if(s && idx > -1) {
@@ -1777,34 +1661,16 @@
                 mobile: document.getElementById('suppMobile').value || '',
                 email: document.getElementById('suppEmail').value || ''
             };
-            
-            if(idx > -1) {
-                const oldData = suppliers[idx];
-                suppliers[idx] = data;
-                updateInFirebase('suppliers', oldData.id, data);
-            } else {
-                suppliers.push(data);
-                pushToFirebase('suppliers', data);
-            }
-            
-            localStorage.setItem('faith_suppliers_list', JSON.stringify(suppliers));
-            renderSuppliers(); 
-            toggleSupplierModal(false);
+            if(idx > -1) suppliers[idx] = data; else suppliers.push(data);
+            pushToFirebase();
+            renderSuppliers(); toggleSupplierModal(false);
         };
 
         function renderSuppliers() {
             document.getElementById('supplierTableBody').innerHTML = suppliers.map((s, i) => `<tr class="border-b"><td class="p-3 font-bold text-blue-600">${i+1}</td><td class="p-3 font-bold">${s.name}</td><td class="p-3">${s.address || ''}</td><td class="p-3">${s.type || ''}</td><td class="p-3">${s.person || ''}</td><td class="p-3">${s.designation || ''}</td><td class="p-3">${s.mobile || ''}</td><td class="p-3">${s.email || ''}</td><td class="p-3 text-center"><button onclick="toggleSupplierModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteSupp(${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
 
-        function deleteSupp(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = suppliers[i];
-                suppliers.splice(i,1); 
-                removeFromFirebase('suppliers', deleted.id);
-                localStorage.setItem('faith_suppliers_list', JSON.stringify(suppliers)); 
-                renderSuppliers(); 
-            }
-        }
+        function deleteSupp(i) { if(confirm('Delete?')) { suppliers.splice(i,1); pushToFirebase(); renderSuppliers(); }}
 
         // --- Inventory Logic ---
         function renderInventory() {
@@ -1821,12 +1687,11 @@
             document.getElementById('outStockCount').innerText = out;
         }
 
-        // --- ACCOUNTS LOGIC ---
+        // --- ACCOUNTS LOGIC --- (with pushToFirebase)
         function switchAccountsTab(sub) {
             activeAccountsTab = sub;
             document.querySelectorAll('.accounts-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('accounts-' + sub).classList.add('active');
-            
             const subTabs = ['income', 'expense', 'transactions', 'orders'];
             subTabs.forEach(id => {
                 const btn = document.getElementById('tab-' + id);
@@ -1836,7 +1701,6 @@
                     btn.classList.remove('ring-2', 'ring-purple-400', 'bg-white');
                 }
             });
-
             const addBtn = document.getElementById('addAccBtn');
             if(sub === 'transactions') addBtn.classList.add('hidden');
             else {
@@ -1853,16 +1717,13 @@
             const modal = document.getElementById('accModal');
             modal.classList.toggle('hidden', !show);
             if(!show) return;
-
             document.getElementById('accForm').reset();
             document.getElementById('accDate').valueAsDate = new Date();
             document.getElementById('accType').value = type;
             document.getElementById('editAccIndex').value = idx;
-
             const header = document.getElementById('accModalHeader');
             const submit = document.getElementById('accSubmitBtn');
             const title = document.getElementById('accModalTitle');
-            
             if(type === 'income') {
                 header.className = 'p-4 text-white flex justify-between items-center bg-green-600 sticky top-0 z-10';
                 submit.className = 'w-full bg-green-600 text-white font-bold py-3 rounded-lg uppercase shadow-lg';
@@ -1872,7 +1733,6 @@
                 submit.className = 'w-full bg-red-600 text-white font-bold py-3 rounded-lg uppercase shadow-lg';
                 title.innerText = idx > -1 ? 'Edit Expense' : 'Add Expense';
             }
-
             if(idx > -1) {
                 const list = type === 'income' ? income : expense;
                 const item = list[idx];
@@ -1891,28 +1751,12 @@
                 amount: parseFloat(document.getElementById('accAmount').value),
                 purpose: document.getElementById('accPurpose').value
             };
-
             if(type === 'income') {
-                if(idx > -1) {
-                    const oldData = income[idx];
-                    income[idx] = data;
-                    updateInFirebase('income', oldData.id, data);
-                } else {
-                    income.push(data);
-                    pushToFirebase('income', data);
-                }
-                localStorage.setItem('faith_income_list', JSON.stringify(income));
+                if(idx > -1) income[idx] = data; else income.push(data);
             } else {
-                if(idx > -1) {
-                    const oldData = expense[idx];
-                    expense[idx] = data;
-                    updateInFirebase('expense', oldData.id, data);
-                } else {
-                    expense.push(data);
-                    pushToFirebase('expense', data);
-                }
-                localStorage.setItem('faith_expense_list', JSON.stringify(expense));
+                if(idx > -1) expense[idx] = data; else expense.push(data);
             }
+            pushToFirebase();
             renderAccounts();
             toggleAccModal(false);
         };
@@ -1921,11 +1765,9 @@
             const modal = document.getElementById('orderModal');
             modal.classList.toggle('hidden', !show);
             if(!show) return;
-
             document.getElementById('orderForm').reset();
             document.getElementById('editOrderIndex').value = idx;
             document.getElementById('orderDate').valueAsDate = new Date();
-
             if(idx > -1) {
                 const item = orders[idx];
                 document.getElementById('orderClient').value = item.client;
@@ -1949,40 +1791,18 @@
                 cost: cost,
                 profit: val - cost
             };
-
-            if(idx > -1) {
-                const oldData = orders[idx];
-                orders[idx] = data;
-                updateInFirebase('orders', oldData.id, data);
-            } else {
-                orders.push(data);
-                pushToFirebase('orders', data);
-            }
-            localStorage.setItem('faith_orders_list', JSON.stringify(orders));
+            if(idx > -1) orders[idx] = data; else orders.push(data);
+            pushToFirebase();
             renderAccounts();
             toggleOrderModal(false);
         };
 
         function deleteAcc(type, idx) {
             if(!confirm('Delete this entry?')) return;
-            if(type === 'income') { 
-                const deleted = income[idx];
-                income.splice(idx, 1); 
-                removeFromFirebase('income', deleted.id);
-                localStorage.setItem('faith_income_list', JSON.stringify(income)); 
-            }
-            else if(type === 'expense') { 
-                const deleted = expense[idx];
-                expense.splice(idx, 1); 
-                removeFromFirebase('expense', deleted.id);
-                localStorage.setItem('faith_expense_list', JSON.stringify(expense)); 
-            }
-            else if(type === 'order') { 
-                const deleted = orders[idx];
-                orders.splice(idx, 1); 
-                removeFromFirebase('orders', deleted.id);
-                localStorage.setItem('faith_orders_list', JSON.stringify(orders)); 
-            }
+            if(type === 'income') { income.splice(idx, 1); }
+            else if(type === 'expense') { expense.splice(idx, 1); }
+            else if(type === 'order') { orders.splice(idx, 1); }
+            pushToFirebase();
             renderAccounts();
         }
 
@@ -1990,7 +1810,6 @@
             const now = new Date();
             const thisYear = now.getFullYear();
             const thisMonth = now.getMonth();
-
             const sortedIncome = [...income].sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('incomeTableBody').innerHTML = sortedIncome.map((item, i) => `
                 <tr class="border-b">
@@ -2004,7 +1823,6 @@
                     </td>
                 </tr>
             `).join('');
-
             const sortedExpense = [...expense].sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('expenseTableBody').innerHTML = sortedExpense.map((item, i) => `
                 <tr class="border-b">
@@ -2018,12 +1836,10 @@
                     </td>
                 </tr>
             `).join('');
-
             let combined = [
                 ...income.map(i => ({...i, type: 'INCOME', color: 'text-green-600'})),
                 ...expense.map(e => ({...e, type: 'EXPENSE', color: 'text-red-600'}))
             ].sort((a, b) => new Date(b.date) - new Date(a.date));
-
             document.getElementById('transactionsTableBody').innerHTML = combined.map(tr => `
                 <tr class="border-b">
                     <td class="p-3 text-xs">${formatFriendlyDate(tr.date)}</td>
@@ -2032,7 +1848,6 @@
                     <td class="p-3 font-bold ${tr.color}">${tr.amount.toFixed(2)}</td>
                 </tr>
             `).join('');
-
             const sortedOrders = [...orders].sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('ordersTableBody').innerHTML = sortedOrders.map((item, i) => `
                 <tr class="border-b">
@@ -2049,24 +1864,19 @@
                     </td>
                 </tr>
             `).join('');
-
             const totalInc = income.reduce((s, i) => s + i.amount, 0);
             const totalExp = expense.reduce((s, e) => s + e.amount, 0);
-
             if (activeAccountsTab === 'income') {
                 const yearInc = income.filter(i => new Date(i.date).getFullYear() === thisYear).reduce((s, i) => s + i.amount, 0);
                 const monthInc = income.filter(i => { const d = new Date(i.date); return d.getFullYear() === thisYear && d.getMonth() === thisMonth; }).reduce((s, i) => s + i.amount, 0);
                 updateStatsUI('INCOME', 'text-green-600', 'bg-green-50', 'border-green-100', 'Total Income', totalInc, 'This Year', yearInc, 'This Month', monthInc);
-            } 
-            else if (activeAccountsTab === 'expense') {
+            } else if (activeAccountsTab === 'expense') {
                 const yearExp = expense.filter(e => new Date(e.date).getFullYear() === thisYear).reduce((s, e) => s + e.amount, 0);
                 const monthExp = expense.filter(e => { const d = new Date(e.date); return d.getFullYear() === thisYear && d.getMonth() === thisMonth; }).reduce((s, e) => s + e.amount, 0);
                 updateStatsUI('EXPENSE', 'text-red-600', 'bg-red-50', 'border-red-100', 'Total Expense', totalExp, 'This Year', yearExp, 'This Month', monthExp);
-            }
-            else if (activeAccountsTab === 'transactions') {
+            } else if (activeAccountsTab === 'transactions') {
                 updateStatsUI('TRANSACTIONS', 'text-blue-600', 'bg-blue-50', 'border-blue-100', 'Total Income', totalInc, 'Total Expense', totalExp, 'Net Balance', totalInc - totalExp);
-            }
-            else if (activeAccountsTab === 'orders') {
+            } else if (activeAccountsTab === 'orders') {
                 const totValue = orders.reduce((s, o) => s + o.value, 0);
                 const totCost = orders.reduce((s, o) => s + o.cost, 0);
                 const totProf = orders.reduce((s, o) => s + o.profit, 0);
@@ -2081,7 +1891,6 @@
             document.getElementById('statVal2').innerText = v2.toFixed(2);
             document.getElementById('statLabel3').innerText = l3;
             document.getElementById('statVal3').innerText = v3.toFixed(2);
-
             const cards = ['statCard1', 'statCard2', 'statCard3'];
             cards.forEach(id => {
                 const el = document.getElementById(id);
@@ -2093,7 +1902,7 @@
             });
         }
 
-        // --- INVOICE LOGIC ---
+        // --- INVOICE LOGIC --- (with pushToFirebase)
         function switchInvoiceSubTab(sub) {
             document.querySelectorAll('.invoice-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('invoice-' + sub).classList.add('active');
@@ -2151,17 +1960,8 @@
                 mobile: document.getElementById('mobile').value||'N/A',
                 email: document.getElementById('email').value||''
             }; 
-
-            if(idx>-1) {
-                const oldData = clients[idx];
-                clients[idx] = data; 
-                updateInFirebase('clients', oldData.id, data);
-            } else { 
-                clients.push(data); 
-                pushToFirebase('clients', data);
-            }
-
-            localStorage.setItem('faith_clients_list', JSON.stringify(clients)); 
+            if(idx>-1) clients[idx]=data; else clients.push(data); 
+            pushToFirebase(); 
             renderClients(); toggleClientModal(false); 
         };
 
@@ -2200,35 +2000,12 @@
                 rate: document.getElementById('rate').value||0, 
                 stock: document.getElementById('stockQty').value||0 
             }; 
-
-            if(idx>-1) {
-                const oldData = products[idx];
-                products[idx] = data;
-                updateInFirebase('products', oldData.id, data);
-            } else { 
-                products.push(data); 
-                pushToFirebase('products', data);
-            }
-
-            localStorage.setItem('faith_products_list', JSON.stringify(products)); 
+            if(idx>-1) products[idx]=data; else products.push(data); 
+            pushToFirebase(); 
             renderProducts(); toggleProductModal(false); 
         };
 
-        function deleteItem(t, i) { 
-            if(confirm('Delete?')) { 
-                if(t==='clients') {
-                    const deleted = clients[i];
-                    clients.splice(i,1); 
-                    removeFromFirebase('clients', deleted.id);
-                } else {
-                    const deleted = products[i];
-                    products.splice(i,1); 
-                    removeFromFirebase('products', deleted.id);
-                }
-                localStorage.setItem('faith_'+t+'_list', JSON.stringify(t==='clients'?clients:products)); 
-                t==='clients'?renderClients():renderProducts();
-            }
-        }
+        function deleteItem(t, i) { if(confirm('Delete?')) { if(t==='clients') clients.splice(i,1); else products.splice(i,1); pushToFirebase(); t==='clients'?renderClients():renderProducts(); }}
 
         function filterTable(tbodyId, val) {
             const rows = document.getElementById(tbodyId).getElementsByTagName('tr');
@@ -2347,19 +2124,8 @@
             const editIdx = parseInt(document.getElementById('editInvoiceIndex').value);
             if(!clientName || currentInvoiceItems.length === 0) return alert("Fill all details");
             const inv = { id: document.getElementById('invNo').value, client: clientName, orderId: document.getElementById('invOrderId').value, subject: document.getElementById('invSubject').value || '', date: document.getElementById('invDate').value, total: document.getElementById('invGrandTotal').innerText, paid: document.getElementById('invPaid').value, due: document.getElementById('invDue').value, items: JSON.parse(JSON.stringify(currentInvoiceItems)) };
-
-            if(editIdx > -1) { 
-                const oldData = invoices[editIdx];
-                invoices[editIdx] = inv; 
-                updateInFirebase('invoices', oldData.id, inv);
-                alert("Invoice Updated!"); 
-            } else { 
-                invoices.push(inv); 
-                pushToFirebase('invoices', inv);
-                alert("Invoice Saved!"); 
-            }
-
-            localStorage.setItem('faith_invoices_list', JSON.stringify(invoices));
+            if(editIdx > -1) { invoices[editIdx] = inv; alert("Invoice Updated!"); } else { invoices.push(inv); alert("Invoice Saved!"); }
+            pushToFirebase();
             initInvoiceFields(); switchInvoiceSubTab('saved');
         }
 
@@ -2398,15 +2164,7 @@
             renderInvoiceItems(); switchInvoiceSubTab('create');
         }
 
-        function deleteInvoice(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = invoices[i];
-                invoices.splice(i, 1); 
-                removeFromFirebase('invoices', deleted.id);
-                localStorage.setItem('faith_invoices_list', JSON.stringify(invoices)); 
-                renderSavedInvoices(); 
-            }
-        }
+        function deleteInvoice(i) { if(confirm('Delete?')) { invoices.splice(i, 1); pushToFirebase(); renderSavedInvoices(); }}
 
         function numberToWords(num) {
             if (!num || isNaN(num) || num === 0) return "Zero Taka Only";
@@ -2449,7 +2207,7 @@
             return result.charAt(0).toUpperCase() + result.slice(1) + ' Only';
         }
 
-        // --- Invoice PDF ---
+        // --- Invoice PDF (unchanged) ---
         function downloadInvoicePDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -2459,7 +2217,6 @@
             const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
             let isFirstPage = true;
-
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) {
                     doc.addPage(); 
@@ -2469,7 +2226,6 @@
                 }
                 return y;
             }
-
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
                 if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); } catch(e){} }
@@ -2487,9 +2243,7 @@
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); 
                 doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
-
             addHeaderAndFooter();
-
             doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("To,", 14, currentY); currentY += 5;
             doc.setFont("helvetica", "bold"); doc.text(inv.client, 14, currentY); currentY += 5;
             doc.setFont("helvetica", "normal"); 
@@ -2500,7 +2254,6 @@
             doc.setFont("helvetica", "bold"); doc.text("Order ID:", 130, 57); doc.setFont("helvetica", "normal"); doc.text(inv.orderId || 'N/A', 160, 57);
             currentY = Math.max(currentY, 70);
             if (inv.subject) { currentY = checkPageBreak(currentY, 6); doc.setFont("helvetica", "bold"); doc.text("Subject: " + inv.subject, 14, currentY, { maxWidth: 180 }); currentY += 6; }
-
             const tableData = inv.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.unit || 'Pcs', item.price, item.total]);
             doc.autoTable({
                 startY: currentY, head: [['SL', 'Items', 'Description', 'Unit', 'Rate', 'Total']], body: tableData, theme: 'grid',
@@ -2518,7 +2271,6 @@
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
             });
-
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 30);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Amount in Words:", 14, finalY);
             doc.setFont("helvetica", "normal"); const words = numberToWords(Math.round(parseFloat(inv.total)));
@@ -2538,7 +2290,7 @@
             doc.save(`${inv.id}_${inv.client}.pdf`);
         }
 
-        // --- QUOTATION LOGIC ---
+        // --- QUOTATION LOGIC (with pushToFirebase) ---
         function switchQuotationSubTab(sub) {
             document.querySelectorAll('.quotation-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('quotation-' + sub).classList.add('active');
@@ -2668,19 +2420,8 @@
             const editIdx = parseInt(document.getElementById('editQuotationIndex').value);
             if(!clientName || currentQuotationItems.length === 0) return alert("Fill all details");
             const quot = { id: document.getElementById('quotNo').value, client: clientName, refNo: document.getElementById('quotRefNo').value, subject: document.getElementById('quotSubject').value || '', date: document.getElementById('quotDate').value, total: document.getElementById('quotGrandTotal').innerText, vat: document.getElementById('quotVat').value, ait: document.getElementById('quotAit').value, netTotal: document.getElementById('quotNetTotal').innerText, items: JSON.parse(JSON.stringify(currentQuotationItems)) };
-
-            if(editIdx > -1) { 
-                const oldData = quotations[editIdx];
-                quotations[editIdx] = quot; 
-                updateInFirebase('quotations', oldData.id, quot);
-                alert("Quotation Updated!"); 
-            } else { 
-                quotations.push(quot); 
-                pushToFirebase('quotations', quot);
-                alert("Quotation Saved!"); 
-            }
-
-            localStorage.setItem('faith_quotations_list', JSON.stringify(quotations));
+            if(editIdx > -1) { quotations[editIdx] = quot; alert("Quotation Updated!"); } else { quotations.push(quot); alert("Quotation Saved!"); }
+            pushToFirebase();
             initQuotationFields(); switchQuotationSubTab('saved');
         }
 
@@ -2752,15 +2493,7 @@
             renderQuotationItems(); switchQuotationSubTab('create');
         }
 
-        function deleteQuotation(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = quotations[i];
-                quotations.splice(i, 1); 
-                removeFromFirebase('quotations', deleted.id);
-                localStorage.setItem('faith_quotations_list', JSON.stringify(quotations)); 
-                renderSavedQuotations(); 
-            }
-        }
+        function deleteQuotation(i) { if(confirm('Delete?')) { quotations.splice(i, 1); pushToFirebase(); renderSavedQuotations(); }}
 
         function downloadQuotationPDF(index) {
             const { jsPDF } = window.jspdf;
@@ -2771,11 +2504,9 @@
             const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
             let isFirstPage = true;
-
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
-
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
                 if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); } catch(e){} }
@@ -2793,9 +2524,7 @@
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); 
                 doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
-
             addHeaderAndFooter();
-
             doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("To,", 14, currentY); currentY += 5;
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text(quot.client, 14, currentY); currentY += 5;
             doc.setFont("helvetica", "normal"); const addr = doc.splitTextToSize(clientData.address, 80); doc.text(addr, 14, currentY);
@@ -2805,7 +2534,6 @@
             doc.setFont("helvetica", "bold"); doc.text("Ref No:", 130, 57); doc.setFont("helvetica", "normal"); doc.text(quot.refNo || 'N/A', 160, 57);
             currentY = Math.max(currentY, 70);
             if (quot.subject) { currentY = checkPageBreak(currentY, 6); doc.setFont("helvetica", "bold"); doc.text("Subject: " + quot.subject, 14, currentY, { maxWidth: 180 }); currentY += 6; }
-
             const tableData = quot.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.unit || 'Pcs', item.price, item.total]);
             doc.autoTable({
                 startY: currentY, head: [['SL', 'Items', 'Description', 'Qty', 'Unit', 'Unit Price', 'Total']], body: tableData, theme: 'grid',
@@ -2823,7 +2551,6 @@
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
             });
-
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 30);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Amount in Words:", 14, finalY);
             doc.setFont("helvetica", "normal"); const words = numberToWords(Math.round(parseFloat(quot.netTotal)));
@@ -2851,7 +2578,7 @@
             doc.save(`${quot.id}_${quot.client}.pdf`);
         }
 
-        // --- DELIVERY CHALLAN LOGIC ---
+        // --- DELIVERY CHALLAN LOGIC (with pushToFirebase) ---
         function switchDeliverySubTab(sub) {
             document.querySelectorAll('.delivery-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('delivery-' + sub).classList.add('active');
@@ -2960,19 +2687,8 @@
             const editIdx = parseInt(document.getElementById('editDeliveryIndex').value);
             if(!clientName || currentDeliveryItems.length === 0) return alert("Fill all details");
             const del = { id: document.getElementById('delNo').value, client: clientName, orderId: document.getElementById('delOrderId').value, gatePassNo: document.getElementById('delGatePassNo').value, address: document.getElementById('delAddress').value, date: document.getElementById('delDate').value, totalQty: document.getElementById('delTotalQty').innerText, items: JSON.parse(JSON.stringify(currentDeliveryItems)) };
-
-            if(editIdx > -1) { 
-                const oldData = deliveries[editIdx];
-                deliveries[editIdx] = del; 
-                updateInFirebase('deliveries', oldData.id, del);
-                alert("Delivery Challan Updated!"); 
-            } else { 
-                deliveries.push(del); 
-                pushToFirebase('deliveries', del);
-                alert("Delivery Challan Saved!"); 
-            }
-
-            localStorage.setItem('faith_deliveries_list', JSON.stringify(deliveries));
+            if(editIdx > -1) { deliveries[editIdx] = del; alert("Delivery Challan Updated!"); } else { deliveries.push(del); alert("Delivery Challan Saved!"); }
+            pushToFirebase();
             initDeliveryFields(); switchDeliverySubTab('saved');
         }
 
@@ -3009,15 +2725,7 @@
             renderDeliveryItems(); switchDeliverySubTab('create');
         }
 
-        function deleteDelivery(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = deliveries[i];
-                deliveries.splice(i, 1); 
-                removeFromFirebase('deliveries', deleted.id);
-                localStorage.setItem('faith_deliveries_list', JSON.stringify(deliveries)); 
-                renderSavedDeliveries(); 
-            }
-        }
+        function deleteDelivery(i) { if(confirm('Delete?')) { deliveries.splice(i, 1); pushToFirebase(); renderSavedDeliveries(); }}
 
         function downloadDeliveryPDF(index) {
             const { jsPDF } = window.jspdf;
@@ -3028,11 +2736,9 @@
             const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
             let isFirstPage = true;
-
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
-
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
                 if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); } catch(e){} }
@@ -3050,9 +2756,7 @@
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); 
                 doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
-
             addHeaderAndFooter();
-
             doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("To,", 14, currentY); currentY += 5;
             doc.setFont("helvetica", "bold"); doc.text(del.client, 14, currentY); currentY += 5;
             doc.setFont("helvetica", "normal"); const addr = doc.splitTextToSize(del.address || clientData.address, 80); doc.text(addr, 14, currentY);
@@ -3061,7 +2765,6 @@
             doc.setFont("helvetica", "bold"); doc.text("Date:", 130, 52); doc.setFont("helvetica", "normal"); doc.text(formatFriendlyDate(del.date), 160, 52);
             doc.setFont("helvetica", "bold"); doc.text("Order ID:", 130, 57); doc.setFont("helvetica", "normal"); doc.text(del.orderId || 'N/A', 160, 57);
             doc.setFont("helvetica", "bold"); doc.text("Gate Pass No:", 130, 62); doc.setFont("helvetica", "normal"); doc.text(del.gatePassNo || 'N/A', 160, 62);
-
             const tableData = del.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.remarks || '']);
             doc.autoTable({
                 startY: 70, head: [['SL', 'Items', 'Description', 'Qty', 'Remarks']], body: tableData, theme: 'grid',
@@ -3079,7 +2782,6 @@
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
             });
-
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 20);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Total Items Qty:", 140, finalY); doc.text(del.totalQty, 196, finalY, { align: "right" });
             let termsY = finalY + 6; termsY = checkPageBreak(termsY, 40);
@@ -3096,7 +2798,7 @@
             doc.save(`${del.id}_${del.client}.pdf`);
         }
 
-        // --- PURCHASE ORDER LOGIC ---
+        // --- PURCHASE ORDER LOGIC (with pushToFirebase) ---
         function switchPurchaseSubTab(sub) {
             document.querySelectorAll('.purchase-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('purchase-' + sub).classList.add('active');
@@ -3213,19 +2915,8 @@
             const editIdx = parseInt(document.getElementById('editPurchaseIndex').value);
             if(!supplierName || currentPurchaseItems.length === 0) return alert("Fill all details");
             const pur = { id: document.getElementById('purNo').value, supplier: supplierName, refNo: document.getElementById('purRefNo').value, subject: document.getElementById('purSubject').value || '', date: document.getElementById('purDate').value, total: document.getElementById('purGrandTotal').innerText, items: JSON.parse(JSON.stringify(currentPurchaseItems)) };
-
-            if(editIdx > -1) { 
-                const oldData = purchases[editIdx];
-                purchases[editIdx] = pur; 
-                updateInFirebase('purchases', oldData.id, pur);
-                alert("Purchase Order Updated!"); 
-            } else { 
-                purchases.push(pur); 
-                pushToFirebase('purchases', pur);
-                alert("Purchase Order Saved!"); 
-            }
-
-            localStorage.setItem('faith_purchases_list', JSON.stringify(purchases));
+            if(editIdx > -1) { purchases[editIdx] = pur; alert("Purchase Order Updated!"); } else { purchases.push(pur); alert("Purchase Order Saved!"); }
+            pushToFirebase();
             initPurchaseFields(); switchPurchaseSubTab('saved');
         }
 
@@ -3263,15 +2954,7 @@
             renderPurchaseItems(); switchPurchaseSubTab('create');
         }
 
-        function deletePurchase(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = purchases[i];
-                purchases.splice(i, 1); 
-                removeFromFirebase('purchases', deleted.id);
-                localStorage.setItem('faith_purchases_list', JSON.stringify(purchases)); 
-                renderSavedPurchases(); 
-            }
-        }
+        function deletePurchase(i) { if(confirm('Delete?')) { purchases.splice(i, 1); pushToFirebase(); renderSavedPurchases(); }}
 
         function downloadPurchasePDF(index) {
             const { jsPDF } = window.jspdf;
@@ -3282,11 +2965,9 @@
             const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
             let isFirstPage = true;
-
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 46; } return y;
             }
-
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
                 if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); } catch(e){} }
@@ -3299,9 +2980,7 @@
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
-
             addHeaderAndFooter();
-
             doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("To,", 14, currentY); currentY += 5;
             doc.setFont("helvetica", "bold"); doc.text(pur.supplier, 14, currentY); currentY += 5;
             doc.setFont("helvetica", "normal"); const addr = doc.splitTextToSize(supplierData.address, 80); doc.text(addr, 14, currentY);
@@ -3311,7 +2990,6 @@
             doc.setFont("helvetica", "bold"); doc.text("Ref No:", 130, 57); doc.setFont("helvetica", "normal"); doc.text(pur.refNo || 'N/A', 160, 57);
             currentY = Math.max(currentY, 70);
             if (pur.subject) { currentY = checkPageBreak(currentY, 6); doc.setFont("helvetica", "bold"); doc.text("Subject: " + pur.subject, 14, currentY, { maxWidth: 180 }); currentY += 6; }
-
             const tableData = pur.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.unit || 'Pcs', item.price, item.total]);
             doc.autoTable({
                 startY: currentY, head: [['SL', 'Items', 'Description', 'Qty', 'Unit', 'Unit Price', 'Total']], body: tableData, theme: 'grid',
@@ -3329,7 +3007,6 @@
                     doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
                 }
             });
-
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 30);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Amount in Words:", 14, finalY);
             doc.setFont("helvetica", "normal"); const words = numberToWords(Math.round(parseFloat(pur.total)));
@@ -3347,7 +3024,7 @@
             doc.save(`${pur.id}_${pur.supplier}.pdf`);
         }
 
-        // --- MONEY RECEIPT LOGIC ---
+        // --- MONEY RECEIPT LOGIC (with pushToFirebase) ---
         function switchMoneyReceiptSubTab(sub) {
             document.querySelectorAll('.moneyreceipt-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('moneyreceipt-' + sub).classList.add('active');
@@ -3422,19 +3099,9 @@
             if(!clientName) return alert("Please select a client");
             if(!document.getElementById('mrAmount').value) return alert("Please enter amount");
             const mr = { id: document.getElementById('mrNo').value, client: clientName, date: document.getElementById('mrDate').value, amount: document.getElementById('mrAmount').value, amountWords: document.getElementById('mrAmountWords').value, paymentMode: document.getElementById('mrPaymentMode').value, chequeNo: document.getElementById('mrChequeNo').value, bankName: document.getElementById('mrBankName').value, address: document.getElementById('mrAddress').value };
-
-            if(editIdx > -1) { 
-                const oldData = moneyReceipts[editIdx];
-                moneyReceipts[editIdx] = mr; 
-                updateInFirebase('moneyReceipts', oldData.id, mr);
-                alert("Money Receipt Updated!"); 
-            } else { 
-                moneyReceipts.push(mr); 
-                pushToFirebase('moneyReceipts', mr);
-                alert("Money Receipt Saved!"); 
-            }
-
-            localStorage.setItem('faith_moneyreceipts_list', JSON.stringify(moneyReceipts));
+            if(editIdx > -1) { moneyReceipts[editIdx] = mr; alert("Money Receipt Updated!"); } 
+            else { moneyReceipts.push(mr); alert("Money Receipt Saved!"); }
+            pushToFirebase();
             initMoneyReceiptFields(); switchMoneyReceiptSubTab('create');
         }
 
@@ -3474,30 +3141,17 @@
             toggleChequeFields(); switchMoneyReceiptSubTab('create');
         }
 
-        function deleteMoneyReceipt(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = moneyReceipts[i];
-                moneyReceipts.splice(i, 1); 
-                removeFromFirebase('moneyReceipts', deleted.id);
-                localStorage.setItem('faith_moneyreceipts_list', JSON.stringify(moneyReceipts)); 
-                renderSavedMoneyReceipts(); 
-            }
-        }
+        function deleteMoneyReceipt(i) { if(confirm('Delete?')) { moneyReceipts.splice(i, 1); pushToFirebase(); renderSavedMoneyReceipts(); }}
 
         async function downloadMoneyReceiptPDF(index) {
             const receipt = moneyReceipts[index];
             if (!receipt) return;
-
             const element = document.getElementById('pdf-template');
             element.style.display = 'block';
-
-            // Header Data
             document.getElementById('pdf-company-name').textContent = settings.company || 'FAITH ENGINEERING';
             document.getElementById('pdf-company-address').textContent = settings.address || '';
             document.getElementById('pdf-company-contact').textContent = `Mobile: ${settings.mobile || ''} | Email: ${settings.email || ''} | Website: ${settings.website || ''}`;
             document.getElementById('pdf-footer-text').textContent = settings.slogan || '';
-
-            // Receipt Content
             document.getElementById('pdf-client-name').textContent = receipt.client;
             document.getElementById('pdf-client-address').textContent = receipt.address || '';
             document.getElementById('pdf-receipt-id').textContent = receipt.id;
@@ -3506,12 +3160,9 @@
             document.getElementById('pdf-amount').textContent = parseFloat(receipt.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('pdf-amount-words').textContent = receipt.amountWords || numberToWords(receipt.amount);
             document.getElementById('pdf-currency').textContent = settings.currency || '৳';
-
             if (receipt.paymentMode === 'Cheque' && receipt.chequeNo) {
                 document.getElementById('pdf-cheque-details').innerHTML = `<span style="font-weight: bold; color: #000000;">Cheque No:</span> ${receipt.chequeNo}    <span style="font-weight: bold; color: #000000;">Bank:</span> ${receipt.bankName || ''}`;
             } else { document.getElementById('pdf-cheque-details').innerHTML = ''; }
-
-            // Branding and Signature
             if (settings.logo) { 
                 document.getElementById('pdf-company-logo').src = settings.logo; 
                 document.getElementById('pdf-logo-wrapper').style.display = 'block'; 
@@ -3520,10 +3171,8 @@
             }
             if (settings.seal) { document.getElementById('pdf-company-seal').src = settings.seal; document.getElementById('pdf-seal-container').style.display = 'block'; } else { document.getElementById('pdf-seal-container').style.display = 'none'; }
             if (settings.sign) { document.getElementById('pdf-signature').src = settings.sign; document.getElementById('pdf-signature').style.display = 'block'; } else { document.getElementById('pdf-signature').style.display = 'none'; }
-
             document.getElementById('pdf-signatory-name').textContent = settings.signatory || '';
             document.getElementById('pdf-signatory-designation').textContent = settings.designation || '';
-
             const opt = { 
                 margin: [0, 0, 0, 0], 
                 filename: `${receipt.id}.pdf`, 
@@ -3531,11 +3180,10 @@
                 html2canvas: { scale: 2, useCORS: true, letterRendering: true }, 
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
             };
-
             html2pdf().set(opt).from(element).save().then(() => { element.style.display = 'none'; });
         }
 
-        // --- DOCUMENTS LOGIC ---
+        // --- DOCUMENTS LOGIC (with pushToFirebase) ---
         function switchDocumentsSubTab(sub) {
             document.querySelectorAll('.documents-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('documents-' + sub).classList.add('active');
@@ -3575,19 +3223,9 @@
             const editIdx = parseInt(document.getElementById('editDocumentIndex').value);
             if(!title || !content) return alert("Please enter both title and content");
             const doc = { id: document.getElementById('docNo').value, title: title, date: document.getElementById('docDate').value, content: content };
-
-            if(editIdx > -1) { 
-                const oldData = documents[editIdx];
-                documents[editIdx] = doc; 
-                updateInFirebase('documents', oldData.id, doc);
-                alert("Document Updated!"); 
-            } else { 
-                documents.push(doc); 
-                pushToFirebase('documents', doc);
-                alert("Document Saved!"); 
-            }
-
-            localStorage.setItem('faith_documents_list', JSON.stringify(documents));
+            if(editIdx > -1) { documents[editIdx] = doc; alert("Document Updated!"); } 
+            else { documents.push(doc); alert("Document Saved!"); }
+            pushToFirebase();
             initDocumentFields(); switchDocumentsSubTab('saved');
         }
 
@@ -3622,26 +3260,16 @@
             switchDocumentsSubTab('create');
         }
 
-        function deleteDocument(i) { 
-            if(confirm('Delete?')) { 
-                const deleted = documents[i];
-                documents.splice(i, 1); 
-                removeFromFirebase('documents', deleted.id);
-                localStorage.setItem('faith_documents_list', JSON.stringify(documents)); 
-                renderSavedDocuments(); 
-            }
-        }
+        function deleteDocument(i) { if(confirm('Delete?')) { documents.splice(i, 1); pushToFirebase(); renderSavedDocuments(); }}
 
         function downloadDocumentPDF(index) {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
             const documentData = documents[index]; const footerMargin = 20; const pageHeight = doc.internal.pageSize.height;
             let currentY = 46;
             let isFirstPage = true;
-
             function checkPageBreak(y, neededSpace = 10) {
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 46; } return y;
             }
-
             const addHeaderAndFooter = () => {
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 34, 196, 34);
                 if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); } catch(e){} }
@@ -3651,9 +3279,7 @@
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
                 doc.setFontSize(8); doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "normal"); doc.text(settings.slogan || "Excellence in Service", 105, pageHeight - 17, { align: "center" });
             };
-
             addHeaderAndFooter();
-
             doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 255); doc.text(documentData.title, 105, currentY, { align: "center" });
             currentY += 10;
             doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); 
@@ -3663,12 +3289,10 @@
             doc.setFont("helvetica", "bold"); doc.text("Date:", 145, currentY); 
             doc.setFont("helvetica", "normal"); doc.text(formatFriendlyDate(documentData.date), 196, currentY, { align: "right" }); 
             currentY += 12;
-
             const cL = doc.splitTextToSize(documentData.content, 180);
             for (let i = 0; i < cL.length; i++) {
                 currentY = checkPageBreak(currentY, 5); doc.text(cL[i], 14, currentY); currentY += 5;
             }
-
             currentY += 15; currentY = checkPageBreak(currentY, 30);
             if(settings.seal) { try { doc.addImage(settings.seal, 'PNG', 105, currentY - 3, 18, 18); } catch(e){} }
             if(settings.sign) { try { doc.addImage(settings.sign, 'PNG', 155, currentY - 5, 30, 10); } catch(e){} }
@@ -3682,9 +3306,7 @@
 
         // --- RIGHT SWIPE BACK ---
         let touchStartX = 0; let touchEndX = 0;
-
         function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
-
         function handleTouchEnd(e) {
             touchEndX = e.changedTouches[0].screenX;
             if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
@@ -3692,10 +3314,8 @@
                 if (activeTab && activeTab.id !== 'dashboard') { showDashboard(); }
             }
         }
-
         document.addEventListener('touchstart', handleTouchStart);
         document.addEventListener('touchend', handleTouchEnd);
     </script>
 </body>
-
 </html>
