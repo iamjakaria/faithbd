@@ -2166,7 +2166,7 @@
 
         function deleteInvoice(i) { if(confirm('Delete?')) { invoices.splice(i, 1); pushToFirebase(); renderSavedInvoices(); }}
 
-        function numberToWords(num) {
+        function numberToWords(num, exactFraction) {
             if (!num || isNaN(num) || num === 0) return "Zero Taka Only";
             const numStr = parseFloat(num).toFixed(2);
             const [integerPart, decimalPart] = numStr.split('.');
@@ -2273,7 +2273,7 @@
             });
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 30);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Amount in Words:", 14, finalY);
-            doc.setFont("helvetica", "normal"); const words = numberToWords(Math.round(parseFloat(inv.total)));
+            doc.setFont("helvetica", "normal"); const words = numberToWords(parseFloat(inv.due || 0));
             const wordsLines = doc.splitTextToSize(words, 100); doc.text(wordsLines, 14, finalY + 5);
             let wordsY = finalY + 5 + (wordsLines.length * 5);
             doc.setFont("helvetica", "bold"); doc.text("Grand Total:", 140, finalY); doc.text(inv.total, 196, finalY, { align: "right" });
@@ -2553,7 +2553,7 @@
             });
             let finalY = doc.lastAutoTable.finalY + 6; finalY = checkPageBreak(finalY, 30);
             doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0); doc.text("Amount in Words:", 14, finalY);
-            doc.setFont("helvetica", "normal"); const words = numberToWords(Math.round(parseFloat(quot.netTotal)));
+            doc.setFont("helvetica", "normal"); const words = numberToWords(parseFloat(quot.netTotal), true);
             const wordsLines = doc.splitTextToSize(words, 100); doc.text(wordsLines, 14, finalY + 5);
             let wordsY = finalY + 5 + (wordsLines.length * 5);
             doc.setFont("helvetica", "bold"); doc.text("Sub Total:", 140, finalY); doc.text(quot.total, 196, finalY, { align: "right" });
@@ -3304,8 +3304,18 @@
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
 
-        // --- RIGHT SWIPE BACK REMOVED --- (touch handlers deleted)
-
+        // --- RIGHT SWIPE BACK ---
+        let touchStartX = 0; let touchEndX = 0;
+        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id !== 'dashboard') { showDashboard(); }
+            }
+        }
+        document.addEventListener('touchstart', handleTouchStart);
+        document.addEventListener('touchend', handleTouchEnd);
     </script>
 </body>
 </html>
