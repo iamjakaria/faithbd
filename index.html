@@ -52,7 +52,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" onerror="console.log('html2pdf offline, money receipt pdf fallback to jsPDF')"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap');
-        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; }
+        html { overscroll-behavior-x: none; }
+        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; overscroll-behavior-x: none; }
         .tab-content { display: none; min-height: calc(150vh - 100px); }
         .tab-content.active { display: flex; flex-direction: column; }
         .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab, .moneyreceipt-sub-tab, .documents-sub-tab { display: none; }
@@ -3292,18 +3293,27 @@
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
 
-        // --- RIGHT SWIPE BACK ---
-        let touchStartX = 0; let touchEndX = 0;
-        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
-        function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (activeTab && activeTab.id !== 'dashboard') { showDashboard(); }
-            }
-        }
-        document.addEventListener('touchstart', handleTouchStart);
-        document.addEventListener('touchend', handleTouchEnd);
+        // Block ONLY browser back/forward navigation triggered by edge swipe gestures
+        // Left-right scrolling within the page is preserved
+        (function() {
+            var startX = 0;
+            var startY = 0;
+            document.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            document.addEventListener('touchmove', function(e) {
+                var dx = e.touches[0].clientX - startX;
+                var dy = e.touches[0].clientY - startY;
+                var isHorizontal = Math.abs(dx) > Math.abs(dy);
+                // Block only edge swipes: left edge (right swipe = back) and right edge (left swipe = forward)
+                var fromLeftEdge = startX < 20 && dx > 0;
+                var fromRightEdge = startX > window.innerWidth - 20 && dx < 0;
+                if (isHorizontal && (fromLeftEdge || fromRightEdge)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        })();
     </script>
 </body>
 </html>
