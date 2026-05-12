@@ -52,8 +52,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" onerror="console.log('html2pdf offline, money receipt pdf fallback to jsPDF')"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap');
-        html { overscroll-behavior-x: none; }
-        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; overscroll-behavior-x: none; }
+        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; }
         .tab-content { display: none; min-height: calc(150vh - 100px); }
         .tab-content.active { display: flex; flex-direction: column; }
         .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab, .moneyreceipt-sub-tab, .documents-sub-tab { display: none; }
@@ -2228,7 +2227,7 @@
                 return y;
             }
             const addHeaderAndFooter = () => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                 doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); 
                 doc.text(settings.company, 105, 32, { align: "center" });
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
@@ -2261,7 +2260,7 @@
                 columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' } },
                 margin: { top: 42, bottom: footerMargin + 10 },
                 didDrawPage: (data) => {
-                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                     doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -2506,7 +2505,7 @@
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 49; } return y;
             }
             const addHeaderAndFooter = () => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                 doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); 
                 doc.text(settings.company, 105, 32, { align: "center" });
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
@@ -2538,7 +2537,7 @@
                 columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' }, 6: { halign: 'right' } },
                 margin: { top: 42, bottom: footerMargin + 10 },
                 didDrawPage: (data) => {
-                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                     doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -2735,7 +2734,7 @@
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 49; } return y;
             }
             const addHeaderAndFooter = () => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                 doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); 
                 doc.text(settings.company, 105, 32, { align: "center" });
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
@@ -2766,7 +2765,7 @@
                 columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' } },
                 margin: { top: 42, bottom: footerMargin + 10 },
                 didDrawPage: (data) => {
-                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                     doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -2961,7 +2960,7 @@
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); isFirstPage = false; return 49; } return y;
             }
             const addHeaderAndFooter = () => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                 doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                 if (isFirstPage) {
@@ -2989,7 +2988,7 @@
                 columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
                 margin: { top: 42, bottom: footerMargin + 10 },
                 didDrawPage: (data) => {
-                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                    if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                     doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                     doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -3261,7 +3260,7 @@
                 if (y + neededSpace > pageHeight - footerMargin) { doc.addPage(); addHeaderAndFooter(); return 49; } return y;
             }
             const addHeaderAndFooter = () => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 92, 1, 26, 26); } catch(e){} }
+                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 94, 1, 22, 22); } catch(e){} }
                 doc.setFontSize(28); doc.setTextColor(204, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 105, 32, { align: "center" });
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, 37, 196, 37);
                 doc.setDrawColor(204, 0, 0); doc.setLineWidth(0.8); doc.line(14, pageHeight - 22, 196, pageHeight - 22);
@@ -3293,27 +3292,18 @@
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
 
-        // Block ONLY browser back/forward navigation triggered by edge swipe gestures
-        // Left-right scrolling within the page is preserved
-        (function() {
-            var startX = 0;
-            var startY = 0;
-            document.addEventListener('touchstart', function(e) {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            }, { passive: true });
-            document.addEventListener('touchmove', function(e) {
-                var dx = e.touches[0].clientX - startX;
-                var dy = e.touches[0].clientY - startY;
-                var isHorizontal = Math.abs(dx) > Math.abs(dy);
-                // Block only edge swipes: left edge (right swipe = back) and right edge (left swipe = forward)
-                var fromLeftEdge = startX < 20 && dx > 0;
-                var fromRightEdge = startX > window.innerWidth - 20 && dx < 0;
-                if (isHorizontal && (fromLeftEdge || fromRightEdge)) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        })();
+        // --- RIGHT SWIPE BACK ---
+        let touchStartX = 0; let touchEndX = 0;
+        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id !== 'dashboard') { showDashboard(); }
+            }
+        }
+        document.addEventListener('touchstart', handleTouchStart);
+        document.addEventListener('touchend', handleTouchEnd);
     </script>
 </body>
 </html>
